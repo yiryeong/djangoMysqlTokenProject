@@ -1,11 +1,11 @@
 import jwt
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from payhistory.models import User, PayHistory
 from payhistory.serializer import UserSerializer, HistorySerializer
 from django.contrib.auth.hashers import check_password
@@ -28,18 +28,20 @@ class GetUserList(APIView):
     def get(self, request):
         query_set = User.objects.all()
         serializer = UserSerializer(query_set, many=True)
-        return JsonResponse(serializer.data, safe=False, status=200)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 # 누구나 접근가능
 @permission_classes([AllowAny])
 class RegistUser(APIView):
+
+    serializer_class = UserSerializer
+
     def post(self, request):
-        serializer = UserSerializer(request.data)
+        serializer = self.serializer_class(request.data)
         email = serializer.data['email']
 
         if User.objects.filter(email=email).exists():
-            # DB에 있는 값 user 객체에 담음
             user = User.objects.filter(email=email)
             data = dict(
                 msg="이미 존재하는 메일입니다.",
@@ -48,12 +50,13 @@ class RegistUser(APIView):
             return Response(data)
 
         user = serializer.create(request.data)
-        return Response(dict(data=UserSerializer(user).data, msg="회원가입 성공", status=201))
+        return Response(dict(data=self.serializer_class(user).data, msg="회원가입 성공"), status=status.HTTP_201_CREATED)
 
 
 # 누구나 접근가능
 @permission_classes([AllowAny])
 class Login(APIView):
+
     def post(self, request):
         email = request.data.get('email', "")
         password = request.data.get('password', "")
@@ -69,22 +72,25 @@ class Login(APIView):
         }
 
         if user is None:
-            return Response(dict(msg="로그인 메일이 존재하지 않습니다.", email=email, status=400))
+            return Response(dict(msg="로그인 메일이 존재하지 않습니다.", email=email), status=status.HTTP_400_BAD_REQUEST)
 
         if check_password(password, user.password):
-            return Response(dict(msg="로그인 성공", uid=user.uid, token=token, status=200))
+            return Response(dict(msg="로그인 성공", uid=user.uid, token=token), status=status.HTTP_200_OK)
         else:
-            return Response(dict(msg="로그인 실패", status=400))
+            return Response("로그인 실패", status=status.HTTP_400_BAD_REQUEST)
 
 
 # 권한 있어야 접근가능
 @permission_classes([IsAuthenticated])
 class HistoryList(APIView):
+
+    serializer_class = HistorySerializer
+
     def get(self, request):
         payload = token_decode(request)
         query_set = PayHistory.objects.filter(uid=payload['uid'])
-        serializer = HistorySerializer(query_set, many=True)
-        return JsonResponse(serializer.data, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)
+        serializer = self.serializer_class(query_set, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 # 권한 있어야 접근가능
@@ -105,7 +111,7 @@ class CreateHistory(APIView):
             return Response(data)
 
         history = serializer.create(request_data)
-        return Response(data=HistorySerializer(history).data, status=201)
+        return Response(data=HistorySerializer(history).data, status=status.HTTP_201_CREATED)
 
 
 # 권한 있어야 접근가능
@@ -122,17 +128,16 @@ class UpdateHistory(APIView):
             else:
                 request_data['uid'] = payload['uid']
         except PayHistory.DoesNotExist:
-            return HttpResponse(status=404)
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
         serializer = HistorySerializer(query_set, data=request_data)
         if serializer.is_valid():
             serializer.save()
             response = dict(
                 msg="정상 수정 되었습니다.",
-                data=serializer.data,
-                status=200
+                data=serializer.data
             )
-            return Response(response)
+            return Response(response, status=status.HTTP_200_OK)
         return Response("잘못된 요청", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -147,11 +152,21 @@ class DeleteHistory(APIView):
             if query_set.uid != uid:
                 return Response("해당 데이터의 삭제 권한이 없습니다.", status=status.HTTP_400_BAD_REQUEST)
         except PayHistory.DoesNotExist:
-            return HttpResponse(status=404)
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
         query_set.delete()
-        response = dict(
-            msg="정상 삭제 되었습니다.",
-            status=200
-        )
-        return Response(response)
+        return Response("정상 삭제 되었습니다.", status=status.HTTP_200_OK)
+
+
+# 권한 있어야 접근가능
+@permission_classes([IsAuthenticated])
+class Logout(APIView):
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response("로그아웃 되었습니다.", status=status.HTTP_205_RESET_CONTENT)
+        except TokenError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
