@@ -1,4 +1,3 @@
-import time
 from rest_framework import serializers
 from payhistory.models import User, PayHistory
 from django.contrib.auth.hashers import make_password
@@ -14,13 +13,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'password')
-        # fields = '__all__'
 
 
 class HistorySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        # datatime을 timestamp로 바꿔주기
-        # validated_data['datetime'] = time.mktime(validated_data['datetime'].timetuple())
         history = PayHistory.objects.create(**validated_data)
         return history
 
