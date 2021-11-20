@@ -91,6 +91,14 @@ DATABASES = {
         'PASSWORD': 'django',
         'HOST': '52.79.247.175',
         'PORT': '3306',
+        # 'TEST': {
+        #     'NAME': 'mytestdb'
+        # },
+        # "OPTIONS":{
+        #     # 'init_command': 'set default_storage_engine=InnoDB;',
+        #     'init_command' : 'SET foreign_key_checks = 0;',
+        #     'charset': 'utf8'
+        # }
     }
 }
 

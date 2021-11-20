@@ -13,6 +13,9 @@ from django_mysql_project.settings import SIMPLE_JWT
 
 
 def token_decode(request):
+    """
+       token decode function
+    """
     access_token = request.META['HTTP_AUTHORIZATION']
     payload = jwt.decode(
         access_token.split(' ')[1],
@@ -26,6 +29,12 @@ def token_decode(request):
 @permission_classes([IsAuthenticated])
 class GetUserList(APIView):
     def get(self, request):
+
+        """
+            로그인 된 상태에서 사용자 정보 조회 함수
+            request에 유효한 token으로 요청 시 정상 조회 가능
+        """
+
         query_set = User.objects.all()
         serializer = UserSerializer(query_set, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -33,11 +42,20 @@ class GetUserList(APIView):
 
 # 누구나 접근가능
 @permission_classes([AllowAny])
-class RegistUser(APIView):
+class RegisterUser(APIView):
 
     serializer_class = UserSerializer
 
     def post(self, request):
+
+        """
+            request.data에 포함된 내용
+                @email : 회원가입할 이메일
+                @password : 회원가입할 비밀번호
+
+            비밀번호를 단방향 암호화 후 회원가입(계정 생성)
+        """
+
         serializer = self.serializer_class(request.data)
         email = serializer.data['email']
 
@@ -58,6 +76,16 @@ class RegistUser(APIView):
 class Login(APIView):
 
     def post(self, request):
+
+        """
+            request에 포함된 내용
+                @email : 로그인할 이메일
+                @password : 비밀번호
+
+            요청 메일이 존재하지 않을 경우 "로그인 메일이 존재하지 않습니다." 메세지 반환
+            로그인 메일이 존재하며 비밀번호가 디비에 비번과 같을 경우 정상 로그인 되며 token 생성하여 반환
+        """
+
         email = request.data.get('email', "")
         password = request.data.get('password', "")
         user = User.objects.filter(email=email).first()
@@ -87,6 +115,12 @@ class HistoryList(APIView):
     serializer_class = HistorySerializer
 
     def get(self, request):
+
+        """
+            로그인 된 상태에서 해당 계정의 가계부 내역 조회 함수
+            request에 유효한 token으로 요청 시 정상 조회 가능
+        """
+
         payload = token_decode(request)
         query_set = PayHistory.objects.filter(uid=payload['uid'])
         serializer = self.serializer_class(query_set, many=True)
@@ -97,6 +131,20 @@ class HistoryList(APIView):
 @permission_classes([IsAuthenticated])
 class CreateHistory(APIView):
     def post(self, request):
+
+        """
+            로그인 된 상태(유효한 token으로 요청 시)에서 해당 계정의 가계부 내역 추가 함수
+
+            request에 포함된 내용
+                @datetime : 데이터 추가하는 현제 시간
+                @price : 가격
+                @memo : 메모
+
+            디비에 이미 해당 시간의 데이터가 존재 할 경우 "해당 데이터는 이미 존재합니다." 메세지 리턴
+                                    없을 경우 해당 데이터 추가
+
+        """
+
         payload = token_decode(request)
         request_data = request.data
         request_data['uid'] = payload['uid']
@@ -118,6 +166,22 @@ class CreateHistory(APIView):
 @permission_classes([IsAuthenticated])
 class UpdateHistory(APIView):
     def put(self, request, id):
+
+        """
+            로그인 된 상태(유효한 token으로 요청 시)에서 해당 계정의 가계부 내역 수정 함수
+
+            @id 가계부 내역의 리코드 아이디
+
+            request에 포함된 내용
+                @datetime : 데이터 수정하는 현제 시간
+                @price : 가격
+                @memo : 메모
+
+            요청 데이터의 uid가 로그인 uid와 다른 경우 "해당 데이터의 수정 권한이 없습니다." 메세지 리턴
+            수정할 데이터가 존재 하지 않을 경우 404 리턴
+            요청 데이터가 유효 할 경우 정상 수정 가능 "정상 수정 되었습니다." 메세지 리턴
+        """
+
         payload = token_decode(request)
         uid = payload['uid']
         request_data = request.data
@@ -145,6 +209,17 @@ class UpdateHistory(APIView):
 @permission_classes([IsAuthenticated])
 class DeleteHistory(APIView):
     def delete(self, request, id):
+
+        """
+            로그인 된 상태(유효한 token으로 요청 시)에서 해당 계정의 가계부 내역 삭제 함수
+
+            @id 가계부 내역의 리코드 아이디
+
+            요청 데이터의 uid가 로그인 uid와 다른 경우 "해당 데이터의 삭제 권한이 없습니다." 메세지 리턴
+            수정할 데이터가 존재 하지 않을 경우 404 리턴
+            요청 데이터가 유효 할 경우 정상 삭제 가능 "정상 삭제 되었습니다." 메세지 리턴
+        """
+
         payload = token_decode(request)
         uid = payload['uid']
         try:
@@ -162,6 +237,13 @@ class DeleteHistory(APIView):
 @permission_classes([IsAuthenticated])
 class Logout(APIView):
     def post(self, request):
+
+        """
+             로그인 된 상태(유효한 token으로 요청 시)에서 로그아웃 함수
+
+             로그인중 정상 생성된 refresh token으로 로그아웃 요청
+        """
+
         try:
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
