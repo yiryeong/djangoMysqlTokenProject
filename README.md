@@ -47,6 +47,6 @@ API 문서 자동화 환경 설치:
     
     
 ## 참고 : 
-https://django-rest-auth.readthedocs.io/en/latest/installation.html
-https://freekim.tistory.com/8](https://freekim.tistory.com/8
-https://django-rest-auth.readthedocs.io/en/latest/installation.html](https://django-rest-auth.readthedocs.io/en/latest/installation.html
+- https://django-rest-auth.readthedocs.io/en/latest/installation.html
+- https://freekim.tistory.com/8](https://freekim.tistory.com/8
+- https://django-rest-auth.readthedocs.io/en/latest/installation.html
