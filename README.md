@@ -20,15 +20,16 @@ notion : https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
 
 
 ## API :
-회원가입 :  /api/register
-로그인 : /api/login/
-로그아웃 : /api/logout/
-로그인 후 기능 :
-   가계부 리스트 조회 : /api/history/getlist/
-   내역 추가 : /api/history/insert/
-   내역 수정 : /api/history/update/<id>
-   내역 삭제 : /api/history/delete/<id>
-
+1. 회원가입 :  /api/register
+2. 로그인 : /api/login/
+3. 로그아웃 : /api/logout/
+4. 로그인 후 기능 :
+    1. 가계부 리스트 조회 : /api/history/getlist/
+    2. 내역 추가 : /api/history/insert/
+    3. 내역 수정 : /api/history/update/<id>
+    4. 내역 삭제 : /api/history/delete/<id>
+    
+    
 
 ## 개발환경 설치 : 
 - python3.9
@@ -41,3 +42,10 @@ notion : https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
 
 API 문서 자동화 환경 설치: 
 - `pip3 install drf-yasg`
+    
+    
+    
+## 참고 : 
+https://django-rest-auth.readthedocs.io/en/latest/installation.html
+https://freekim.tistory.com/8](https://freekim.tistory.com/8
+https://django-rest-auth.readthedocs.io/en/latest/installation.html](https://django-rest-auth.readthedocs.io/en/latest/installation.html
