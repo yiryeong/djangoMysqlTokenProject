@@ -1,7 +1,7 @@
 # django_login_project
 
-개발언어 :  Python Django
-데이터베이스 : Mysql 5.7
+- 개발언어 :  Python Django
+- 데이터베이스 : Mysql 5.7
 
 
 notion : https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
