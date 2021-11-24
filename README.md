@@ -27,8 +27,8 @@ https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
 4. 로그인 후 기능 :
     1. 가계부 리스트 조회 : /api/history/getlist/
     2. 내역 추가 : /api/history/insert/
-    3. 내역 수정 : /api/history/update/<id>
-    4. 내역 삭제 : /api/history/delete/<id>
+    3. 내역 수정 : /api/history/update/id(레코드 아이디)
+    4. 내역 삭제 : /api/history/delete/id(레코드 아이디)
     
     
 
