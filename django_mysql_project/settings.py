@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'user',
     'payhistory',
     'drf_yasg',
 ]
@@ -190,7 +191,7 @@ SIMPLE_JWT = {
 }
 
 
-AUTH_USER_MODEL = 'payhistory.User'
+AUTH_USER_MODEL = 'user.User'
 
 
 AUTHENTICATION_BACKENDS = (

@@ -28,8 +28,10 @@ from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
 from drf_yasg import openapi
 
+
 schema_url_v1_patterns = [
     url('api/', include('payhistory.urls')),
+    url('api/', include('user.urls')),
 ]
 
 schema_view_v1 = get_schema_view(
@@ -47,6 +49,7 @@ schema_view_v1 = get_schema_view(
 urlpatterns = [
     url('admin/', admin.site.urls),
     url('api/', include('payhistory.urls')),
+    url('api/', include('user.urls')),
 
     # Auto DRF API docs
     url(r'^swagger(?P<format>\.json|\.yaml)/v1$', schema_view_v1.without_ui(cache_timeout=0), name='schema-json'),
