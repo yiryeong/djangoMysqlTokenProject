@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import check_password
 from django_mysql_project.settings import SIMPLE_JWT
 
 
-def token_decode(request):
+def decode_token(request):
     """
        token decode function
     """
@@ -65,7 +65,7 @@ class RegisterUser(APIView):
                 msg="이미 존재하는 메일입니다.",
                 email=user.first().email
             )
-            return Response(data)
+            return Response(data, status=status.HTTP_409_CONFLICT)
 
         user = serializer.create(request.data)
         return Response(dict(data=self.serializer_class(user).data, msg="회원가입 성공"), status=status.HTTP_201_CREATED)
@@ -121,7 +121,7 @@ class HistoryList(APIView):
             request에 유효한 token으로 요청 시 정상 조회 가능
         """
 
-        payload = token_decode(request)
+        payload = decode_token(request)
         query_set = PayHistory.objects.filter(uid=payload['uid'])
         serializer = self.serializer_class(query_set, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -145,7 +145,7 @@ class CreateHistory(APIView):
 
         """
 
-        payload = token_decode(request)
+        payload = decode_token(request)
         request_data = request.data
         request_data['uid'] = payload['uid']
         serializer = HistorySerializer(request_data)
@@ -156,7 +156,7 @@ class CreateHistory(APIView):
                 datetime=history.first().datetime,
                 price=history.first().price
             )
-            return Response(data)
+            return Response(data, status=status.HTTP_409_CONFLICT)
 
         history = serializer.create(request_data)
         return Response(data=HistorySerializer(history).data, status=status.HTTP_201_CREATED)
@@ -178,17 +178,18 @@ class UpdateHistory(APIView):
                 @memo : 메모
 
             요청 데이터의 uid가 로그인 uid와 다른 경우 "해당 데이터의 수정 권한이 없습니다." 메세지 리턴
-            수정할 데이터가 존재 하지 않을 경우 404 리턴
+            수정할 데이터가 존재 하지 않을 경우 403 리턴
             요청 데이터가 유효 할 경우 정상 수정 가능 "정상 수정 되었습니다." 메세지 리턴
         """
 
-        payload = token_decode(request)
+        payload = decode_token(request)
         uid = payload['uid']
         request_data = request.data
+
         try:
             query_set = PayHistory.objects.get(id=id)
             if query_set.uid != uid:
-                return Response("해당 데이터의 수정 권한이 없습니다.", status=status.HTTP_400_BAD_REQUEST)
+                return Response("해당 데이터의 수정 권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
             else:
                 request_data['uid'] = payload['uid']
         except PayHistory.DoesNotExist:
@@ -201,7 +202,7 @@ class UpdateHistory(APIView):
                 msg="정상 수정 되었습니다.",
                 data=serializer.data
             )
-            return Response(response, status=status.HTTP_200_OK)
+            return Response(response, status=status.HTTP_201_CREATED)
         return Response("잘못된 요청", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -216,16 +217,17 @@ class DeleteHistory(APIView):
             @id 가계부 내역의 리코드 아이디
 
             요청 데이터의 uid가 로그인 uid와 다른 경우 "해당 데이터의 삭제 권한이 없습니다." 메세지 리턴
-            수정할 데이터가 존재 하지 않을 경우 404 리턴
+            수정할 데이터가 존재 하지 않을 경우 403 리턴
             요청 데이터가 유효 할 경우 정상 삭제 가능 "정상 삭제 되었습니다." 메세지 리턴
         """
 
-        payload = token_decode(request)
+        payload = decode_token(request)
         uid = payload['uid']
+
         try:
             query_set = PayHistory.objects.get(id=id)
             if query_set.uid != uid:
-                return Response("해당 데이터의 삭제 권한이 없습니다.", status=status.HTTP_400_BAD_REQUEST)
+                return Response("해당 데이터의 삭제 권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
         except PayHistory.DoesNotExist:
             return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
