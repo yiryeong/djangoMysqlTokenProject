@@ -7,8 +7,8 @@ RUN apt-get install git -y
 
 
 # github 에 소스코드 받기
-RUN git clone https://github.com/yiryeong/django_login_project.git
-WORKDIR /django_login_project
+RUN git clone https://github.com/yiryeong/djangoMysqlTokenProject.git
+WORKDIR /djangoMysqlTokenProject
 
 
 # 필요한 환경 설치
