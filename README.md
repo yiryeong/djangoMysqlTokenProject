@@ -1,4 +1,4 @@
-# django_login_project
+# djangoMysqlTokenProject
 
 - 개발언어 :  Python Django
 - 데이터베이스 : Mysql 5.7
