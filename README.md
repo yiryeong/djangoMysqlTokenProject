@@ -20,9 +20,9 @@ https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
 
 
 ## API :
-1. 회원가입 :  /api/register/
-2. 로그인 : /api/login/
-3. 로그아웃 : /api/logout/
+1. 회원가입 : POST  /api/register/
+2. 로그인 : POST /api/login/
+3. 로그아웃 : POST  /api/logout/
 4. 로그인 후 기능 :
     1. 가계부 리스트 조회 : GET  /api/histories/
     2. 내역 추가 : POST  /api/histories/
