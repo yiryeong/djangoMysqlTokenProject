@@ -9,26 +9,25 @@ https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
 
 
 ## 기능 :
-1. 회원가입 ( 이메일과 비밀번호)
+1. 회원가입 (이메일과 비밀번호)
 2. 로그인/로그아웃 
 3. 로그인 이후 
     1. 내역 추가 
     2. 수정기능
     3. 삭제기능 
-    4. 삭제 후 복원 (x)
-    5. 조회
+    4. 조회
 4. 로그인하지 않은 고객은 접근 제한처리
 
 
 ## API :
-1. 회원가입 :  /api/register
+1. 회원가입 :  /api/register/
 2. 로그인 : /api/login/
 3. 로그아웃 : /api/logout/
 4. 로그인 후 기능 :
-    1. 가계부 리스트 조회 : /api/history/getlist/
-    2. 내역 추가 : /api/history/insert/
-    3. 내역 수정 : /api/history/update/id(레코드 아이디)
-    4. 내역 삭제 : /api/history/delete/id(레코드 아이디)
+    1. 가계부 리스트 조회 : GET  /api/histories/
+    2. 내역 추가 : POST  /api/histories/
+    3. 내역 수정 : PUT   /api/histories/id(레코드 아이디)
+    4. 내역 삭제 : DELETE   /api/histories/id(레코드 아이디)
     
     
 
