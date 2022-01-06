@@ -32,7 +32,7 @@ https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
     
 
 ## 개발환경 설치 : 
-- python3.6 
+- python3.9 
 - `python3 -m pip install Django`
 - `pip3 install djangorestframework`
 - `pip3 install markdown`
