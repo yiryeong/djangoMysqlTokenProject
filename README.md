@@ -5,7 +5,7 @@
 
 
 ## notion : 
-https://www.notion.so/73c7b8fc71f441c4bb2287fa0f0dfef9
+https://yiryeong.notion.site/Django-DRF-Mysql-token-25eed24a79694781bfa47aafd672b11b
 
 
 ## 기능 :
